@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="it.exolab.ecommerce.mapper.ItemMapper">
+
+	<resultMap id="itemWithCategory" type="Item">
+	    <result property="id" column="id"/>
+	    <result property="title" column="title"/>
+	    <result property="description" column="description"/>
+	    <result property="price" column="price"/>
+	    <result property="quantity" column="quantity"/>
+	    <result property="picture" column="picture"/>
+		<result property="cid" column="cid"/>
+
+	   <association property="category" javaType="Category">
+	    <id property="id" column="cid"/>
+	    <result property="title" column="category__title"/>
+	    
+	  </association>
+    
+      
+</resultMap>
+
+
+	<insert id = "insert" parameterType="Item" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+	   insert into item (title,description,price,quantity,picture,cid) values (#{title},#{description},#{price},#{quantity},#{picture},#{cid})
+	</insert>
+	
+	<update id = "update" parameterType="Item" >
+	   update item set title=#{title},description=#{description},price=#{price},quantity=#{quantity},picture=#{picture},cid=#{cid} where id=#{id}
+	</update>
+	
+	<delete id = "delete" parameterType="Long" >
+	   delete from item where id=#{id}
+	</delete>
+	
+	<select id = "all" resultMap="itemWithCategory" >
+	   select i.*,c.title as category__title from item i inner join category c on c.id=i.cid order by i.title asc
+	</select>
+	
+   <select id = "find" parameterType="Long"  resultMap="itemWithCategory" >
+	   select i.*,c.title as category__title from item i inner join category c on c.id=i.cid where i.id=#{id}
+	</select>
+	
+	<update id = "updateQuantity" parameterType="Item" >
+	   update item set quantity=quantity-#{quantity} where id=#{id}
+	</update>
+	
+	
+	
+</mapper>

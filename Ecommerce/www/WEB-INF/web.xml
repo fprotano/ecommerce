@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+  <display-name>Ecommerce</display-name>
+  
+  <servlet>
+  	<servlet-name>ecommerceServlet</servlet-name>
+  	<servlet-class>it.exolab.ecommerce.servlet.EcommerceServlet</servlet-class>
+  	
+  		<init-param>
+            <param-name>controllers_package</param-name>
+            <param-value>it.exolab.ecommerce.controller</param-value>
+       </init-param>
+       
+       
+       <init-param>
+            <param-name>repository_dir</param-name>
+            <param-value>D:\\dev\\workspaces\\corso_regione_lazio\\Ecommerce\\repository</param-value>
+       </init-param>
+       
+       
+        <init-param>
+            <param-name>admin_email</param-name>
+            <param-value>admin@demo.it</param-value>
+       </init-param>
+       <init-param>
+            <param-name>admin_pass</param-name>
+            <param-value>demo</param-value>
+       </init-param>
+       
+       
+        <multipart-config>
+      <max-file-size>3145728</max-file-size>
+      <max-request-size>5242880</max-request-size>
+    </multipart-config>
+        
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>ecommerceServlet</servlet-name>
+  	<url-pattern>/ecommerce/*</url-pattern>
+  </servlet-mapping>
+  
+  
+  
+  
+    
+  <filter>
+		
+		<filter-name>jspFilter</filter-name>
+		<filter-class>it.exolab.ecommerce.filter.JSPFilter</filter-class>
+		
+  </filter>
+  
+  
+  
+	
+	
+  <filter-mapping>
+	   <filter-name>jspFilter</filter-name>
+	   <url-pattern>*.jsp</url-pattern>
+ </filter-mapping>
+ 
+ 
+ 
+ 
+   <filter>
+		
+		<filter-name>loginFilter</filter-name>
+		<filter-class>it.exolab.ecommerce.filter.LoginFilter</filter-class>
+		
+  </filter>
+	
+	
+  <filter-mapping>
+	   <filter-name>loginFilter</filter-name>
+	   <url-pattern>/ecommerce/*</url-pattern>
+ </filter-mapping>
+ 
+ 
+ 
+   <filter>
+		
+		<filter-name>commonIncludedFilter</filter-name>
+		<filter-class>it.exolab.ecommerce.filter.CommonIncludedFilter</filter-class>
+		
+  </filter>
+	
+	
+  <filter-mapping>
+	   <filter-name>commonIncludedFilter</filter-name>
+	   <url-pattern>/ecommerce/*</url-pattern>
+	   <url-pattern>*.jsp</url-pattern>
+ </filter-mapping>
+ 
+ 
+ 
+ 
+  <welcome-file-list>
+  	<welcome-file>redirect.jsp</welcome-file>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

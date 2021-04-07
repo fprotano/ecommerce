@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="it.exolab.ecommerce.mapper.CartMapper">
+
+
+
+
+
+	<resultMap id="cartWithItem" type="Cart">
+	    <result column="id"  property="id" />
+	     <result column="session_id"  property="session_id" />
+	     <result column="iid"  property="iid" />
+		<result column="price"  property="price" />
+		<result column="quantity"  property="quantity" />
+
+	   <association property="item" javaType="Item">
+	    <id property="id" column="iid"/>
+	    <result property="title" column="item__title"/>
+	    <result property="quantity" column="item__quantity"/>
+	    <result property="picture" column="item__picture"/>
+	    
+	  </association>
+    
+      
+</resultMap>
+
+
+
+	<insert id = "insert" parameterType="Cart" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+	   insert into cart (session_id,iid,price,quantity) values (#{session_id},#{iid},#{price},#{quantity})
+	</insert>
+	
+	<update id = "update" parameterType="Cart" >
+	   update cart set price=#{price} ,quantity=#{quantity} where id=#{id}
+	</update>
+	
+	<delete id = "delete" parameterType="Long" >
+	   delete from cart where id=#{id}
+	</delete>
+	
+	<delete id = "deleteBySessionId" parameterType="String" >
+	   delete from cart where session_id=#{session_id}
+	</delete>
+	
+	<select id = "all" parameterType="String" resultMap="cartWithItem" >
+	   select c.*, i.title as item__title
+	   ,i.quantity as item__quantity
+	   ,i.picture as item__picture
+	    from cart c inner join item i on i.id=c.iid where session_id=#{session_id}
+	</select>
+	
+	<select id = "count" parameterType="String" resultType="int" >
+	   select count(*) 
+	    from cart  where session_id=#{session_id}
+	</select>
+	
+   <select id = "find" parameterType="Long" resultMap="cartWithItem" >
+	   select c.*, i.title as item__title
+	   ,i.quantity as item__quantity
+	   ,i.picture as item__picture
+	    from cart c inner join item i on i.id=c.iid where session_id=#{session_id}
+	</select>
+	
+	
+	
+	
+	
+	<select id = "findByIid" parameterType="Cart" resultMap="cartWithItem" >
+	   select c.*, i.title as item__title
+	   ,i.quantity as item__quantity
+	   ,i.picture as item__picture
+	    from cart c inner join item i on i.id=c.iid where session_id=#{session_id}
+	    and iid=#{iid}
+	</select>
+	
+	
+	
+	
+	
+</mapper>

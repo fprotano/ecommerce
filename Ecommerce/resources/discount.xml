@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="it.exolab.ecommerce.mapper.DiscountMapper">
+	<insert id = "insert" parameterType="Discount" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+	   insert into discount (coupon,discount) values (#{coupon},#{discount})
+	</insert>
+	
+	<update id = "update" parameterType="Discount" >
+	   update discount set coupon=#{coupon}, discount=#{discount} where id=#{id}
+	</update>
+	
+	<delete id = "delete" parameterType="Long" >
+	   delete from discount where id=#{id}
+	</delete>
+	
+	<select id = "all" resultType="Discount" >
+	   select * from discount order by coupon asc
+	</select>
+	
+   <select id = "find" parameterType="Long"  resultType="Discount" >
+	   select * from discount where id=#{id}
+	</select>
+	
+	<select id = "findByCoupon" parameterType="String"  resultType="Discount" >
+	   select * from discount where coupon=#{coupon}
+	</select>
+	
+	
+</mapper>

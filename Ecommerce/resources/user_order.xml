@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="it.exolab.ecommerce.mapper.UserOrderMapper">
+
+
+  <resultMap id="userOrderWithSum" type="UserOrder">
+
+	  <result property="id" column="id"/>
+	  <result property="order_no" column="order_no"/>
+	  <result property="uid" column="uid"/>
+	  <result property="discount" column="discount"/>
+	  <result property="total" column="total"/>
+	  <result property="uosid" column="uosid"/>
+	  <result property="updated_at" column="updated_at"/>
+	   
+    
+      
+  </resultMap>
+  
+  
+	<resultMap id="userOrderWithUser" type="UserOrder">
+
+ 	  <result property="id" column="id"/>
+	  <result property="order_no" column="order_no"/>
+	  <result property="uid" column="uid"/>
+	  <result property="discount" column="discount"/>
+	  <result property="total" column="total"/>
+	  <result property="uosid" column="uosid"/>
+	  <result property="updated_at" column="updated_at"/>
+	  
+	   <association property="user" javaType="User">
+	    <id property="id" column="uid"/>
+	    <result property="name" column="user__name"/>
+	    <result property="surname" column="user__surname"/>
+	    <result property="email" column="user__email"/>
+	  </association>
+    
+      
+  </resultMap>
+  
+  <resultMap id="userOrderWithRows" type="UserOrder">
+ 	  <id property="id" column="id"/>
+	  <result property="order_no" column="order_no"/>
+	  <result property="uid" column="uid"/>
+	  <result property="discount" column="discount"/>
+	  <result property="total" column="total"/>
+	  <result property="uosid" column="uosid"/>
+	  <result property="updated_at" column="updated_at"/>
+	   
+	   <association property="user" javaType="User">
+	    <id property="id" column="uid"/>
+	    <result property="name" column="user__name"/>
+	    <result property="surname" column="user__surname"/>
+	    <result property="email" column="user__email"/>
+	  </association>
+	  
+   	<collection property="rows" ofType="UserOrderRow">
+   	 	<id property="id" column="user_order_row__id"/>
+   	 	<result property="price" column="user_order_row__price"/>
+   	 	<result property="quantity" column="user_order_row__quantity"/>
+   	 	
+       <association property="item" javaType="Item">
+	    <id property="id" column="iid"/>
+	    <result property="title" column="item__title"/>
+	    <result property="price" column="item__price"/>
+	    <result property="quantity" column="item__quantity"/>
+	  </association>
+	  
+    </collection>
+    
+      
+  </resultMap>
+  
+
+	<insert id = "insert" parameterType="UserOrder" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+	   insert into user_order (order_no,uid,discount,uosid,updated_at) values (
+	   #{order_no},#{uid},#{discount},1,now()
+	   )
+	</insert>
+	
+	<update id = "update" parameterType="UserOrder" >
+	   update user_order set order_no=#{order_no},uid=#{uid},discount=#{discount} 
+	   ,uosid=#{uosid}
+	   ,updated_at = now()
+	   where id=#{id}
+	</update>
+	
+	<delete id = "delete" parameterType="Long" >
+	   delete from user_order where id=#{id}
+	</delete>
+	
+	<select id = "all" resultMap="userOrderWithUser" >
+	   select 
+	   uo.*
+	   ,(select sum(quantity*price - (   (quantity*price)*(d.discount/100) )  ) from user_order_row where uoid=uo.id) as total
+	   ,u.name as user__name
+	   ,u.surname as user__surname
+	   , u.email as user__email 
+	   from 
+		   user_order uo 
+		   inner join user u on u.id=uo.uid
+		   inner join discount d on d.id=u.did  
+	   order by uo.id desc
+	   
+	   
+	</select>
+	
+	
+	<select id = "findAllByUid" resultMap="userOrderWithSum"  parameterType="Long"  >
+	   select uo.*
+	   , (select sum(quantity*price - (   (quantity*price)*(d.discount/100) )  ) from user_order_row where uoid=uo.id) 
+	   as total 
+	   from user_order uo 
+	   inner join user u on u.id=uo.uid
+	   inner join discount d on d.id=u.did  
+	   where uo.uid=#{uid} order by uo.id desc
+	</select>
+	
+	
+	<select id = "countByUid" resultType="int"  parameterType="Long"  >
+	   select count(*) from user_order uo  where uo.uid=#{uid}
+	</select>
+	
+   <select id = "find" parameterType="Long"  resultMap="userOrderWithRows" >
+	   select uo.*
+	   ,u.name as user__name
+	   ,u.surname as user__surname
+	   , u.email as user__email
+	   
+	   ,(select sum(quantity*price - (   (quantity*price)*(d.discount/100) )  ) from user_order_row where uoid=uo.id) 
+	   as total 
+	   
+	   ,uor.price as user_order_row__price
+	   ,uor.quantity as user_order_row__quantity
+	   
+	   ,i.title as item__title
+	   ,i.price as item__price
+	   ,i.quantity as item__quantity
+	   
+	    from user_order uo inner join user u on u.id=uo.uid
+	    inner join user_order_row uor on uor.uoid=uo.id
+	    inner join discount d on d.id=u.did  
+	    inner join item i on i.id=uor.iid
+	     where uo.id=#{id}
+	    
+	</select>
+	
+	
+	
+	
+	
+</mapper>
